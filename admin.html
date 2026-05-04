@@ -25,7 +25,7 @@
             <img src="https://img2.pic.in.th/True--C.png" class="h-8 md:h-10 w-auto" alt="True Logo">
             <div class="h-10 w-px bg-slate-200 hidden md:block"></div>
             <div>
-                <h1 class="text-lg md:text-xl font-bold text-slate-800 leading-tight">Non Shop Prepaid</h1>
+                <h1 class="text-lg md:text-xl font-bold text-slate-800 leading-tight">Shop Monthly Brief</h1>
                 <p class="text-[11px] md:text-xs text-slate-500 font-medium tracking-wide mt-0.5">Quiz Overview</p>
             </div>
         </div>
@@ -113,11 +113,11 @@
                     <div class="lg:col-span-2 bg-white rounded-2xl p-6 md:p-8 premium-card">
                         <div class="mb-6 pb-4 border-b border-slate-100 flex items-center justify-between">
                             <div>
-                                <h2 class="text-lg font-bold text-slate-800">ความคืบหน้าแยกตามช่องทาง</h2>
+                                <h2 class="text-lg font-bold text-slate-800">% การสอบแต่ละช่องทางแบบเรียวไทม์</h2>
                                 <p class="text-xs text-slate-500 mt-1">Completion Progress by Channel</p>
                             </div>
                         </div>
-                        <div id="channelList" class="space-y-6"></div>
+                        <div id="channelList" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
                     </div>
 
                     <div class="bg-white rounded-2xl p-6 md:p-8 premium-card h-fit flex flex-col">
@@ -208,7 +208,7 @@
     </div>
 
     <script>
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwq6n5fVc04AAhr7W98X_inv1ZTaSSleLgZuqcmWq9lWiVOj1OyAa7RW9WrHPCERXne9Q/exec"; 
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw5jv3iGAHdrnvUQR1bC-4IJZhbAEkfDMo2Lli9HLAIiP_LiaWsB0lD-Iy2ohBJiJfS/exec"; 
         let countdownInterval;
         let globalSettings = null; 
 
@@ -253,14 +253,19 @@
                 chArray.sort((a, b) => b.percent - a.percent);
 
                 chArray.forEach(ch => {
+                    // จุดแก้ไข: ปรับขนาดจาก w-12 h-12 เป็น w-14 h-14 และปรับขอบขาวด้านในให้สมส่วน
                     channelContainer.innerHTML += `
-                        <div>
-                            <div class="flex justify-between items-end text-sm font-semibold text-slate-700 mb-2">
-                                <span>${ch.name} <span class="text-slate-400 font-medium ml-1">(${ch.tested}/${ch.target})</span></span>
-                                <span class="text-red-600 font-bold">${ch.percent}%</span>
+                        <div class="flex items-center gap-3 bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-red-200 hover:shadow-md transition-all group">
+                            <div class="relative w-14 h-14 rounded-full flex items-center justify-center shrink-0" style="background: conic-gradient(#dc2626 ${ch.percent}%, #f1f5f9 0);">
+                                <div class="absolute inset-[4px] bg-white rounded-full flex items-center justify-center shadow-sm">
+                                    <span class="text-xs font-bold text-slate-700 group-hover:text-red-600 transition-colors">${ch.percent}%</span>
+                                </div>
                             </div>
-                            <div class="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                                <div class="bg-red-600 h-full rounded-full transition-all duration-1000 ease-out" style="width: ${ch.percent}%"></div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-[13px] font-bold text-slate-800 truncate leading-tight">${ch.name}</h4>
+                                <div class="text-[11px] text-slate-500 mt-0.5">
+                                    สอบแล้ว <span class="text-red-600 font-bold text-xs">${ch.tested}</span> / ${ch.target} คน
+                                </div>
                             </div>
                         </div>
                     `;
@@ -354,7 +359,6 @@
             return localISOTime;
         }
 
-        // 📌 ระบบความปลอดภัย: ใส่รหัสผ่าน True7201
         function promptTimePassword() {
             const password = prompt("🔐 การตั้งค่าระบบสงวนสิทธิ์เฉพาะ Admin\nกรุณากรอกรหัสผ่านเพื่อดำเนินการต่อ:");
             if (password === "True7201") {
@@ -369,7 +373,7 @@
             if (globalSettings) {
                 document.getElementById('inputStartTime').value = formatToDatetimeLocal(globalSettings.startDate);
                 document.getElementById('inputEndTime').value = formatToDatetimeLocal(globalSettings.endDate);
-                document.getElementById('inputMaxAttempts').value = globalSettings.maxAttempts || 1; // ดึงโควต้ามาแสดง
+                document.getElementById('inputMaxAttempts').value = globalSettings.maxAttempts || 1; 
             }
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -384,7 +388,7 @@
         async function saveTimeSettings() {
             const startVal = document.getElementById('inputStartTime').value;
             const endVal = document.getElementById('inputEndTime').value;
-            const maxAttVal = document.getElementById('inputMaxAttempts').value; // รับค่าโควต้า
+            const maxAttVal = document.getElementById('inputMaxAttempts').value; 
 
             if (!startVal || !endVal || !maxAttVal) {
                 alert("⚠️ กรุณาระบุข้อมูลให้ครบถ้วน");
@@ -405,7 +409,6 @@
             btn.disabled = true;
 
             try {
-                // ส่งค่าที่ 3 (โควต้า) กลับไปเซฟใน Google Sheet
                 const result = await fetchGAS('updateQuizSettings', [newStart, newEnd, maxAttVal]);
                 
                 if (result.success) {
